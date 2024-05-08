@@ -146,32 +146,90 @@ void criar_corredores_idx() {
 
 void criar_veiculos_idx() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "criar_veiculos_idx()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "criar_veiculos_idx()");
+
+	// criar o indice de veiculos alocar mem p armazena lo, preencher com os registros de veiculos 
+	//disponiveis e imprimir uma msg mostrando q o indice foi criado com sucesso
+
+	if (!veiculos_idx){
+		veiculos_idx = malloc(MAX_REGISTROS * sizeof(veiculos_index));
+	}
+
+	if (!veiculos_idx){//verificando alocação 
+		printf(ERRO_MEMORIA_INSUFICIENTE);
+		exit(1);
+	}
+
+	for (unsigned i = 0; i < qtd_registros_veiculos; ++i){
+		Veiculo auxVeiculo = recuperar_registro_veiculo(i);
+		if (strncmp(auxVeiculo.id_veiculo, "*|", 2) == 0){
+			veiculos_idx[i].rrn = -1;
+		}
+		else{
+			veiculos_idx[i].rrn = i;
+		}
+
+
+		strcpy(veiculos_idx[i].id_veiculo, auxVeiculo.id_veiculo);
+	}
+
+	printf(INDICE_CRIADO, "veiculos_idx");
 }
 
 void criar_pistas_idx() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "criar_pistas_idx()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "criar_pistas_idx()");
+
+
+	if (!pistas_idx){
+		pistas_idx = malloc(MAX_REGISTROS * sizeof(pistas_index));
+	}
+	if (!pistas_idx){
+		printf(ERRO_MEMORIA_INSUFICIENTE);
+		
+		exit(1);
+	}
+
+	for (unsigned i = 0; i < qtd_registros_pistas; ++i){
+		Pista auxPista = recuperar_registro_pista(i);
+
+		pistas_idx[i].rrn = i;//ind recebe o rrn=i
+		
+		strcpy(pistas_idx[i].id_pista, auxPista.id_pista);//copiando o id da pista para o indice
+	}
+	printf(INDICE_CRIADO, "pistas_idx");
 }
 
 void criar_corridas_idx() {
     /*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "criar_corridas_idx()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "criar_corridas_idx()");
+
+
+	printf(INDICE_CRIADO, "corridas_idx");
 }
 
 void criar_nome_pista_idx() {
     /*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "criar_nome_pista_idx()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "criar_nome_pista_idx()");
+
+
+	
+	printf(INDICE_CRIADO, "nome_pista_idx");
 }
 
 void criar_preco_veiculo_idx() {
     /*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "criar_preco_veiculo_idx()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "criar_preco_veiculo_idx()");
+
+	printf(INDICE_CRIADO, "preco_veiculo_idx");
 }
 
 void criar_corredor_veiculos_idx() {
     /*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "criar_corredor_veiculos_idx()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "criar_corredor_veiculos_idx()");
+
+		printf(INDICE_CRIADO, "corredor_veiculos_idx");
+
 }
 
 /* Exibe um registro com base no RRN */
@@ -242,27 +300,62 @@ Corredor recuperar_registro_corredor(int rrn) {
 Veiculo recuperar_registro_veiculo(int rrn) {
 	Veiculo v;
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_veiculo()");
-	
+	//printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_veiculo()");
+
+	char temp[TAM_REGISTRO_VEICULO + 1], *p;
+	strncpy(temp, ARQUIVO_VEICULOS + (rrn * TAM_REGISTRO_VEICULO), TAM_REGISTRO_VEICULO);
+	temp[TAM_REGISTRO_VEICULO] = '\0';
+
+	p = strtok(temp, ";");
+	strcpy(v.id_veiculo, p);
+	p = strtok(NULL, ";");
+	strcpy(v.marca, p);
+	p = strtok(NULL, ";");
+	strcpy(v.modelo, p);
+	p = strtok(NULL, ";");
+	strcpy(v.poder, p);
+	p = strtok(NULL, ";");
+	v.velocidade = atoi(p);
+	p = strtok(NULL, ";");
+	v.aceleracao = atoi(p);
+	p = strtok(NULL, ";");
+	v.peso = atoi(p);
+	p = strtok(NULL, ";");
+	v.preco = atof(p);
 	return v;
-}
+	}
 
 Pista recuperar_registro_pista(int rrn) {
 	Pista p;
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_pista()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_pista()");
 
+	char temp[TAM_REGISTRO_PISTA + 1], *point;
+	strncpy(temp, ARQUIVO_PISTAS + (rrn * TAM_REGISTRO_PISTA), TAM_REGISTRO_PISTA);
+	temp[TAM_REGISTRO_PISTA] = '\0';
+
+
+	point = strtok(temp, ";");
+	strcpy(p.id_pista, point);
+	point = strtok(NULL, ";");
+	strcpy(p.nome, point);
+	point = strtok(NULL, ";");
+	p.dificuldade = atoi(point);
+	point = strtok(NULL, ";");
+	p.distancia = atoi(point);
+	point = strtok(NULL, ";");
+	p.recorde = atoi(point);
 	return p;
 }
 
-Corrida recuperar_registro_corrida(int rrn) {
-	Corrida c;
+//Corrida recuperar_registro_corrida(int rrn) {
+//	Corrida c;
 
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_corrida()");
+//	printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_corrida()");
 
-	return c;
-}
+//	return c;
+//}
 
 /* Escreve em seu respectivo arquivo na posição informada (RRN) */
 void escrever_registro_corredor(Corredor c, int rrn) {
@@ -527,7 +620,10 @@ void imprimir_corredor_veiculos_primario_idx_menu(){
 /* Liberar memória e encerrar programa */
 void liberar_memoria_menu() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "liberar_memoria_menu()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "liberar_memoria_menu()");
+
+	free(corredores_idx);
+	free(veiculos_idx);
 }
 
 void inverted_list_insert(char *chave_secundaria, char *chave_primaria, inverted_list *t) {
