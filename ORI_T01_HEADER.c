@@ -535,13 +535,34 @@ void escrever_registro_veiculo(Veiculo v, int rrn) {
 	strcat(temp, aux);
 	strcat(temp, ";");
 	strpadright(temp, '#', TAM_REGISTRO_VEICULO);
-	strncpy(ARQUIVO_VEICULOS + rrn*TAM_REGISTRO_VEICULO, temp, TAM_REGISTRO_VEICULO);//escrevendo no arquivo
+	strncpy(ARQUIVO_VEICULOS + (rrn*TAM_REGISTRO_VEICULO), temp, TAM_REGISTRO_VEICULO);//escrevendo no arquivo
 
 }
 
 void escrever_registro_pista(Pista p, int rrn) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "escrever_registro_pista()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "escrever_registro_pista()");
+
+	char temp[TAM_REGISTRO_PISTA + 1], buff[100];
+	temp[0] = '\0';
+	buff[0] = '\0';
+
+	strcpy(temp, p.id_pista);
+	strcat(temp, ";");
+	strcat(temp, p.nome);
+	strcat(temp, ";");
+	sprintf(buff, "%04d", p.dificuldade);
+	strcat(temp, buff);
+	strcat(temp, ";");
+	sprintf(buff, "%04d", p.distancia);
+	strcat(temp, buff);
+	strcat(temp, ";");
+	sprintf(buff, "%04d", p.recorde);
+	strcat(temp, buff);
+	strcat(temp, ";");
+	strpadright(temp, '#', TAM_REGISTRO_PISTA);
+	strncpy(ARQUIVO_PISTAS + (rrn * TAM_REGISTRO_PISTA), temp, TAM_REGISTRO_PISTA);
+
 }
 
 void escrever_registro_corrida(Corrida i, int rrn) {
@@ -663,7 +684,37 @@ void cadastrar_veiculo_menu(char *marca, char *modelo, char *poder, int velocida
 
 void cadastrar_pista_menu(char *nome, int dificuldade, int distancia, int recorde){
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_pista_menu()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_pista_menu()");
+
+	Pista pista;
+
+	snprintf(pista.id_pista, sizeof(pista.id_pista), "%08d", qtd_registros_pistas);// usnado snprintf para evitar buffer overflow
+	
+	strcpy(pista.nome, nome);
+	pista.dificuldade = dificuldade;
+	pista.distancia = distancia;
+	pista.recorde = recorde;
+
+	pistas_index *fond = bsearch(pista.nome, nome_pista_idx, qtd_registros_pistas, sizeof(nome_pista_index), qsort_nome_pista_idx);
+	// pistas_index *fond = bsearch(pista.id_pista, nome_pista_idx, qtd_registros_pistas, sizeof(nome_pista_index), qsort_nome_pista_idx);
+
+	if(fond == NULL){
+		escrever_registro_pista(pista, qtd_registros_pistas);
+		strcpy(pistas_idx[qtd_registros_pistas].id_pista, pista.id_pista);
+		pistas_idx[qtd_registros_pistas].rrn = qtd_registros_pistas;//indice primario
+		strcpy(nome_pista_idx[qtd_registros_pistas].nome, pista.nome);
+		strcpy(nome_pista_idx[qtd_registros_pistas].id_pista, pista.id_pista);
+
+		qtd_registros_pistas++;
+		qsort(nome_pista_idx, qtd_registros_pistas, sizeof(nome_pista_index), qsort_nome_pista_idx);//ordenando o indice dnv
+
+
+
+		printf(SUCESSO);
+     }
+	else{
+		printf(ERRO_PK_REPETIDA, pista.nome);
+	}
 }
 
 void executar_corrida_menu(char *id_pista, char *ocorrencia, char *id_corredores, char *id_veiculos) {
@@ -776,7 +827,16 @@ void imprimir_veiculos_idx_menu() {
 
 void imprimir_pistas_idx_menu() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "imprimir_pistas_idx_menu()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "imprimir_pistas_idx_menu()");
+
+	if(pistas_idx == NULL || qtd_registros_pistas == 0){
+		printf(ERRO_ARQUIVO_VAZIO);
+	}
+	else{
+		for(unsigned i = 0; i < qtd_registros_pistas; ++i){
+			printf("%s, %d\n", pistas_idx[i].id_pista, pistas_idx[i].rrn);
+		}
+	}
 }
 
 void imprimir_corridas_idx_menu() {
@@ -787,7 +847,29 @@ void imprimir_corridas_idx_menu() {
 /* Imprimir índices secundários */
 void imprimir_nome_pista_idx_menu() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "imprimir_nome_pista_idx_menu()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "imprimir_nome_pista_idx_menu()");
+
+	if(nome_pista_idx == NULL || qtd_registros_pistas == 0){
+		printf(ERRO_ARQUIVO_VAZIO);
+	}
+	// else{
+	// 	for(unsigned i = 0; i < qtd_registros_pistas; ++i){
+	// 		printf("%.50s, %.8s\n", nome_pista_idx[i].nome, nome_pista_idx[i].id_pista);
+	// 	}
+	// }
+	
+	else{char nome[34];
+// convertentedo para maiuscula
+		for(unsigned i = 0; i < qtd_registros_pistas; ++i){
+			strcpy(nome, nome_pista_idx[i].nome);
+			// for(int j=0; j<34; j++){
+				for(int j=0; j<sizeof(nome)/sizeof(nome[0]); j++){ 
+					nome[j] = toupper(nome[j]);
+				}
+				printf("%s, %s\n", nome, nome_pista_idx[i].id_pista);
+		}
+	}
+				
 }
 
 void imprimir_preco_veiculo_idx_menu() {
@@ -843,8 +925,73 @@ int inverted_list_primary_search(char result[][TAM_ID_CORREDOR], bool exibir_cam
 
 void* busca_binaria_com_reps(const void *key, const void *base0, size_t nmemb, size_t size, int (*compar)(const void *, const void *), bool exibir_caminho, int posicao_caso_repetido, int retorno_se_nao_encontrado) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_com_reps()");
-	return (void*) -1;
+	//printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_com_reps()");
+	
+	const char *base = (const char*) base0, *pivot;
+	unsigned int check;
+	unsigned int end;
+
+	// if(exibir_caminho && nmemb > 0){
+	if(exibir_caminho == true && nmemb > 0){
+	
+		printf("Utilizando busca binária:");
+	}
+	for (end = nmemb; end != 0; end/=2){
+		// define o piv como o meio do intervalo de busca
+		pivot = base + (end/2) * size;
+		// check = compar(key, pivot);
+		check = (*compar)(key, pivot);
+		if (exibir_caminho){
+			printf(" %ld", (pivot - base) / size);
+		}
+		// verifica se a chave foi encontrada no pivo
+		if (check == 0){
+			if (exibir_caminho){
+				printf("\n");
+				// return (void) *pivot;
+				return (void*) pivot;
+			}	
+		}
+		else if(check > 0){
+			// se a chave for maior que o elemento no pivo, ajusta a base p a direita
+			// base = pivot + size;
+			base = (const char*) pivot + size;
+			end--;
+		}
+	}
+
+
+	if (exibir_caminho&& nmemb != 0){
+		printf("\n");
+	}
+
+	if (retorno_se_nao_encontrado == 0){
+		return NULL;
+	}
+	else if(retorno_se_nao_encontrado == -1){
+		if(check > 0){
+			
+			// return (void*) pivot;
+			// return (void*) (pivot - size);
+			return (void*) (pivot + size);
+
+		}else 
+			return (void*) pivot;
+	}
+	else if(retorno_se_nao_encontrado == 1){
+		// retorna o próximo elemento
+		if(check>0){
+			// return (void*) (pivot + size);
+			return (void*) pivot;
+		}
+		else
+			// return (void*) (pivot + size);
+			return (void*) (pivot - size);
+	}
+	
+	return NULL;// retorna NULL como padrão
+	//return (void*) -1;
+
 }
 
 void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t size, int (*compar)(const void *, const void *), bool exibir_caminho, int retorno_se_nao_encontrado) {
