@@ -334,7 +334,7 @@ bool exibir_pista(int rrn) {
 
 bool exibir_corrida(int rrn) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "exibir_corrida()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "exibir_corrida()");
 	
 
 	if(rrn < 0){
@@ -343,7 +343,7 @@ bool exibir_corrida(int rrn) {
 
 	Corrida auxCorrida = recuperar_registro_corrida(rrn);
 
-	printf("%s, %s, %s, %s, %s\n", auxCorrida.id_pista, auxCorrida.ocorrencia, auxCorrida.id_corredores, auxCorrida.id_veiculos);
+	printf("%s, %s, %s, %s\n", auxCorrida.id_pista, auxCorrida.ocorrencia, auxCorrida.id_corredores, auxCorrida.id_veiculos);
 	return true;
 }
 
@@ -762,7 +762,16 @@ void imprimir_corredores_idx_menu() {
 
 void imprimir_veiculos_idx_menu() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "imprimir_veiculos_idx_menu()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "imprimir_veiculos_idx_menu()");
+
+	if(veiculos_idx == NULL || qtd_registros_veiculos == 0){
+		printf(ERRO_ARQUIVO_VAZIO);
+	}
+	else{
+		for(unsigned i = 0; i < qtd_registros_veiculos; ++i){
+			printf("%s, %d\n", veiculos_idx[i].id_veiculo, veiculos_idx[i].rrn);
+		}
+	}
 }
 
 void imprimir_pistas_idx_menu() {
@@ -783,7 +792,16 @@ void imprimir_nome_pista_idx_menu() {
 
 void imprimir_preco_veiculo_idx_menu() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "imprimir_preco_veiculo_idx_menu()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "imprimir_preco_veiculo_idx_menu()");
+
+	if(preco_veiculo_idx == NULL || qtd_registros_veiculos == 0){
+		printf(ERRO_ARQUIVO_VAZIO);
+	}
+	else{
+		for(unsigned i = 0; i < qtd_registros_veiculos; ++i){
+			printf("%.2lf, %.8s\n", preco_veiculo_idx[i].preco, preco_veiculo_idx[i].id_veiculo);
+		}
+	}
 }
 
 void imprimir_corredor_veiculos_secundario_idx_menu() {
