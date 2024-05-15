@@ -58,10 +58,10 @@ int qsort_corridas_idx(const void *a, const void *b) {
 		((corridas_index*)b)->id_pista
 	);
 
-	if(aux!=0){
-		return aux;
+	if(aux==0){
+		return qsort_data_idx(a,b);
 	}
-	return qsort_data_idx(a,b);
+	return aux;
 
 
 }
@@ -215,10 +215,10 @@ void criar_corridas_idx() {
 	for (unsigned i = 0; i < qtd_registros_corridas; ++i){
 		Corrida auxCorrida = recuperar_registro_corrida(i);
 
-		corridas_idx[i].rrn = i;
+		strncpy(corridas_idx[i].ocorrencia, auxCorrida.ocorrencia,12);
 		strncpy(corridas_idx[i].id_pista, auxCorrida.id_pista,8);
 		//strncpy(corridas_idx[i].ocorrencia, auxCorrida.ocorrencia,4);//tam string errado
-		strncpy(corridas_idx[i].ocorrencia, auxCorrida.ocorrencia,12);
+		corridas_idx[i].rrn = i;
 
 
 	}
@@ -581,7 +581,7 @@ void cadastrar_corredor_menu(char *id_corredor, char *nome, char *apelido){
 	strcpy(corredor.nome, nome);
 	strcpy(corredor.apelido, apelido);
 	//strcpy(corredor.cadastro, datetime);
-	corredor.saldo = 0.0;
+	corredor.saldo = 0.00;
 	current_datetime(corredor.cadastro);
 
 	strcpy(corredor.veiculos[0], "");
@@ -602,16 +602,30 @@ void cadastrar_corredor_menu(char *id_corredor, char *nome, char *apelido){
 		corredores_idx[qtd_registros_corredores].rrn = qtd_registros_corredores;
 		// qtd_registros_corredores++;
 		qtd_registros_corredores = qtd_registros_corredores + 1;
+		//qsort(corredores_idx->id_corredor, qtd_registros_corredores, sizeof(corredores_index), qsort_corredores_idx);
 		qsort(corredores_idx->id_corredor, qtd_registros_corredores, sizeof(corredores_index), qsort_corredores_idx);
+		
 		printf(SUCESSO);
 	}
 }
 
 void remover_corredor_menu(char *id_corredor) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "remover_corredor_menu()");
-}
+	//printf(ERRO_NAO_IMPLEMENTADO, "remover_corredor_menu()");
 
+	corredores_index *fond = bsearch(id_corredor, corredores_idx, qtd_registros_corredores, sizeof(corredores_index), qsort_corredores_idx);
+
+	if(fond == NULL){
+		printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+	}
+	else{
+		char aux[2] = "*|";
+		strncpy(ARQUIVO_CORREDORES + (fond->rrn * TAM_REGISTRO_CORREDOR), aux, 2);
+		fond->rrn = -1;
+		qsort(corredores_idx, qtd_registros_corredores, sizeof(corredores_index), qsort_corredores_idx);
+		printf(SUCESSO);
+	}
+}
 void adicionar_saldo_menu(char *id_corredor, double valor) {
 	adicionar_saldo(id_corredor, valor, true);
 }
@@ -798,7 +812,62 @@ void listar_corridas_periodo_menu(char *data_inicio, char *data_fim) {
 /* Liberar espaço */
 void liberar_espaco_menu() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "liberar_espaco_menu()");
+	//printf(ERRO_NAO_IMPLEMENTADO, "liberar_espaco_menu()");
+
+	Corredor corredor;;
+	int cont=0;
+	char aux[TAM_REGISTRO_CORREDOR + 1];
+	aux[0] = '\0';
+
+
+	for(unsigned i = 0; i < qtd_registros_corredores; i++){
+		corredor = recuperar_registro_corredor(i);
+		
+		if(strncmp(corredor.id_corredor, "*|", 2) != 0){
+			corredores_idx[cont].rrn = cont;
+			strcpy(corredores_idx[cont].id_corredor, corredor.id_corredor);
+			cont++;
+
+			char aux2[TAM_REGISTRO_CORREDOR + 1];
+			char aux3[100];
+			aux2[0] = '\0';
+			aux3[0] = '\0';
+
+			strcat(aux2, corredor.id_corredor);
+			strcat(aux2, ";");
+			strcat(aux2, corredor.nome);
+			strcat(aux2, ";");
+			strcat(aux2, corredor.apelido);
+			strcat(aux2, ";");
+			strcat(aux2, corredor.cadastro);
+			strcat(aux2, ";");
+			sprintf(aux3, "%013.2lf", corredor.saldo);
+			strcat(aux2, aux3);
+			strcat(aux2, ";");
+
+			for(int j = 0, k = 0; j < QTD_MAX_VEICULO; ++j){
+				
+				if(strlen(corredor.veiculos[j]) > 0){
+					if(k == 0){
+						k = 1;
+					}
+					else{
+						strcat(aux2, "|");
+					}
+					strcat(aux2, corredor.veiculos[j]);
+				}
+
+	}
+	strcat(aux2, ";");
+	strpadright(aux2, '#', TAM_REGISTRO_CORREDOR);
+	strcat(aux, aux2);
+		}
+	}
+
+	strcpy(ARQUIVO_CORREDORES, aux);
+	qtd_registros_corredores = cont;
+	qsort(corredores_idx, qtd_registros_corredores, sizeof(corredores_index), qsort_corredores_idx);
+	printf(SUCESSO);
 }
 
 /* Imprimir arquivos de dados */
