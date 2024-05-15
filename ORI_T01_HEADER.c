@@ -1024,75 +1024,52 @@ void* busca_binaria_com_reps(const void *key, const void *base0, size_t nmemb, s
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
 	//printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_com_reps()");
 	
-	const char *base = (const char*) base0, *pivot;
-	unsigned int check;
-	unsigned int end;
+	const char *base = (const char *) base0;
+    const void *mid;
+    int caminho;
+    int end, cmp;
+ 
+    if (exibir_caminho == true && nmemb > 0) {
+        printf(REGS_PERCORRIDOS);
+    }
+    
+ 
+    for (end = nmemb; end != 0; end >>= 1) {
+ 
+        mid = base + (end >> 1) * size;//vet/2
+        cmp = (*compar)(key, mid);//comp mid
+ 
+        if (exibir_caminho) {
+            caminho = (mid - base0) / size;
+            printf(" %d", caminho);
+        }
+        if (cmp == 0){
+            if(exibir_caminho)
+                printf("\n");
+            
+            return (void *)mid;
+        }
+        if (cmp > 0) {    
+            base = (const char *)mid + size;
+            end--;
+        } 
+    }
+ 
+    if ((exibir_caminho) && (nmemb !=0)) {
+        printf("\n");
+    }
+ 
+    if(retorno_se_nao_encontrado == -1)//retorna o anterior
+        return (cmp > 0) ? (void*)(mid + size) : (void*)mid;
 
-	// if(exibir_caminho && nmemb > 0){
-	if((exibir_caminho == true) && (nmemb > 0)){
-	
-		printf("Registros percorridos:");
-	}
-	for (end = nmemb; end != 0; end =end/2){
-		// define o piv como o meio do intervalo de busca
-		pivot = base + (end/2) * size;
-		// check = compar(key, pivot);
-		check = (*compar)(key, pivot);
-		if (exibir_caminho){
-			printf(" %ld", (pivot - base) / size);
-		}
-		// verifica se a chave foi encontrada no pivo
-		if (check == 0){
-			if (exibir_caminho){
-				printf("\n");
-				// return (void) *pivot;
-				return (void*) pivot;
-			}	
-		}
-		else if(check > 0){
-			// se a chave for maior que o elemento no pivo, ajusta a base p a direita
-			// base = pivot + size;
-			base = (const char*) pivot + size;
-			end--;
-		}
-	}
+    else if(retorno_se_nao_encontrado == 0)//retorna o prox
+        return NULL;
 
-
-	if (exibir_caminho && nmemb != 0){
-		printf("\n");
-	}
-
-	
-	if(retorno_se_nao_encontrado == -1){
-		if(check > 0){
-			
-			// return (void*) pivot;
-			// return (void*) (pivot - size);
-			return (void*) (pivot + size);
-
-		}else 
-			{return (void*) pivot;}
-	}
-	
-	
-	else if (retorno_se_nao_encontrado == 0){
-		return NULL;
-	}
-
-
-	else if(retorno_se_nao_encontrado == 1){
-		// retorna o próximo elemento
-		if(check>0){
-			// return (void*) (pivot + size);
-			return (void*) pivot;
-		}
-		else
-			// return (void*) (pivot + size);
-			{return (void*)(pivot - size);}
-	}
-	
-	return NULL;// retorna NULL como padrão
-	//return (void*) -1;
+    else if(retorno_se_nao_encontrado == 1)//ret atual
+        return (cmp > 0) ? (void*)mid : (void*)(mid - size);
+ 
+    return (NULL);//default
+	// return (void*) -1;
 
 }
 
