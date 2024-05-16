@@ -17,7 +17,10 @@
 
 
 /* <<< COLOQUE AQUI OS DEMAIS PROTÓTIPOS DE FUNÇÕES, SE NECESSÁRIO >>> */
-
+// teste 6 ok 
+// implementar comprar_veiculo_menu
+// imprimir_corredor_veiculos_secundario_idx_menu
+// imprimir_corredor_veiculos_primario_idx_menu
 
 /* Funções auxiliares para o qsort.
  * Com uma pequena alteração, é possível utilizá-las no bsearch, assim, evitando código duplicado.
