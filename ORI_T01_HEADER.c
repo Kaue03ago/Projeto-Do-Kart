@@ -789,9 +789,11 @@ void buscar_pista_nome_menu(char *nome_pista) {
 void listar_corredores_id_menu() {
 	if (qtd_registros_corredores == 0)
 		printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
-	else
+	else{
 		for (unsigned int i = 0; i < qtd_registros_corredores; i++)
 			exibir_corredor(corredores_idx[i].rrn);
+
+		}
 }
 
 void listar_corredores_modelo_menu(char *modelo){
@@ -801,7 +803,31 @@ void listar_corredores_modelo_menu(char *modelo){
 
 void listar_veiculos_compra_menu(char *id_corredor) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "listar_veiculos_compra_menu()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "listar_veiculos_compra_menu()");
+	// if(qtd_registros_veiculos == 0){
+	// 	printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+	// }
+	// else{
+		corredores_index *fond = bsearch(id_corredor, corredores_idx, qtd_registros_corredores, sizeof(corredores_index), qsort_corredores_idx);
+		if((fond == NULL)||qtd_registros_veiculos == 0){
+			printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+		}else {
+			int valor=0;
+			Corredor auxCorredor;
+
+			auxCorredor = recuperar_registro_corredor(fond->rrn);
+			for(unsigned i = 0; i < qtd_registros_veiculos; ++i){
+				valor=preco_veiculo_idx[i].preco;
+				veiculos_index *fond = bsearch(preco_veiculo_idx[i].id_veiculo, veiculos_idx, qtd_registros_veiculos, sizeof(veiculos_index), qsort_veiculos_idx);
+		
+				if(valor <= auxCorredor.saldo){
+					exibir_veiculo(fond->rrn);
+				}
+		}
+		
+
+	
+		}
 }
 
 void listar_corridas_periodo_menu(char *data_inicio, char *data_fim) {
@@ -963,7 +989,18 @@ void imprimir_pistas_idx_menu() {
 
 void imprimir_corridas_idx_menu() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "imprimir_corridas_idx_menu()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "imprimir_corridas_idx_menu()");
+
+
+	if(corridas_idx == NULL || qtd_registros_corridas == 0){
+		printf(ERRO_ARQUIVO_VAZIO);
+	}
+	else{
+		for(unsigned i = 0; i < qtd_registros_corridas; ++i){
+			printf("%s, %s, %d\n", corridas_idx[i].ocorrencia, corridas_idx[i].id_pista, corridas_idx[i].rrn);
+		}
+	}
+	
 }
 
 /* Imprimir índices secundários */
@@ -1034,14 +1071,59 @@ void inverted_list_insert(char *chave_secundaria, char *chave_primaria, inverted
 
 bool inverted_list_secondary_search(int *result, bool exibir_caminho, char *chave_secundaria, inverted_list *t) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_secondary_search()");
-	return false;
+	// printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_secondary_search()");
+	// return false;
+
+	corredor_veiculos_secundario_index idx;
+	strcpy(idx.chave_secundaria, chave_secundaria);
+
+
+	// corredor_veiculos_secundario_index *found = busca_binaria((void*)&idx, t->corredor_veiculos_secundario_idx, t->qtd_registros_secundario,
+	// sizeof(corredor_veiculos_secundario_index), qsort_corredor_veiculos_secundario_idx, exibir_caminho, 0);
+	corredor_veiculos_secundario_index *found = busca_binaria((void*)&idx, t->corredor_veiculos_secundario_idx, t->qtd_registros_secundario,
+	sizeof(corredor_veiculos_secundario_index), qsort_corredor_veiculos_secundario_idx, false, 0);
+
+	if(found == NULL){
+		return false;
+	}//nao encontrado
+	else {
+		*result = found->primeiro_indice;
+		return true;
+	}
+	
+	
 }
+	
 
 int inverted_list_primary_search(char result[][TAM_ID_CORREDOR], bool exibir_caminho, int indice, int *indice_final, inverted_list *t) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_primary_search()");
-	return -1;
+	// printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_primary_search()");
+	// return -1;
+
+	int aux[MAX_REGISTROS];//vetor auxiliar para guardar os indices
+	int	qtd = 0;///qtd registros percorridos
+
+
+	for(int i = indice; i != -1; i = qtd++,  i = t->corredor_veiculos_primario_idx[i].proximo_indice){
+		// aux[qtd++] = i;
+
+		// *indice_final = ++i;
+		*indice_final = i;
+		strcpy(result[qtd], t->corredor_veiculos_primario_idx[i].chave_primaria);//copia a chave primaria para o vetor result
+		aux[qtd] = i;
+
+	}if (exibir_caminho == true){
+		printf(REGS_PERCORRIDOS);
+
+		for(int i = 0; i < qtd; i++){
+			// printf("%d ", aux[i]);
+			printf(" %d", aux[i]);
+		}
+		printf("\n");
+	}
+		return qtd;
+		
+
 }
 
 
