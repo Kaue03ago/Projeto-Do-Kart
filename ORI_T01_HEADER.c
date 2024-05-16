@@ -813,63 +813,12 @@ void listar_corridas_periodo_menu(char *data_inicio, char *data_fim) {
 void liberar_espaco_menu() {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
 	//printf(ERRO_NAO_IMPLEMENTADO, "liberar_espaco_menu()");
-/*
-	Corredor corredor;;
-	int cont=0;
-	char aux[TAM_REGISTRO_CORREDOR + 1];
-	aux[0] = '\0';
 
-
-	for(unsigned i = 0; i < qtd_registros_corredores; i++){
-		corredor = recuperar_registro_corredor(i);
-		
-		if(strncmp(corredor.id_corredor, "*|", 2) != 0){
-			corredores_idx[cont].rrn = cont;
-			
-			strcpy(corredores_idx[cont].id_corredor, corredor.id_corredor);
-			cont++;
-
-			char aux2[TAM_REGISTRO_CORREDOR + 1];
-			char aux3[100];
-			aux2[0] = '\0';
-			aux3[0] = '\0';
-
-			strcat(aux2, corredor.id_corredor);
-			strcat(aux2, ";");
-			strcat(aux2, corredor.nome);
-			strcat(aux2, ";");
-			strcat(aux2, corredor.apelido);
-			strcat(aux2, ";");
-			strcat(aux2, corredor.cadastro);
-			strcat(aux2, ";");
-			sprintf(aux3, "%013.2lf", corredor.saldo);
-			strcat(aux2, aux3);
-			strcat(aux2, ";");
-
-			for(int j = 0, k = 0; j < QTD_MAX_VEICULO; ++j){
-				
-				if(strlen(corredor.veiculos[j]) > 0){
-					if(k == 0){
-						k = 1;
-					}
-					else{
-						strcat(aux2, "|");
-					}
-					strcat(aux2, corredor.veiculos[j]);
-				}
-
-	}
-	strcat(aux2, ";");
-	strpadright(aux2, '#', TAM_REGISTRO_CORREDOR);
-	strcat(aux, aux2);
-		}
-	}
-
-	strcpy(ARQUIVO_CORREDORES, aux);
-	qtd_registros_corredores = cont;
-	
-	qsort(corredores_idx, qtd_registros_corredores, sizeof(corredores_index), qsort_corredores_idx);
-	printf(SUCESSO);*/
+// 	 fun percorre todos registros d corredores no arquivo, verificando se o registro ta marcado como deletado 
+// caso n estiver marcado como deletado, o registro eh copiado p/ um novo buff de arquivo temporario
+//  ao mesmo tempo, o indice correspondente deve ser  atualizado para refletir as mudancas no arq de registros.
+//    apos percorrer tds os registros, o conteudo do buff temporario eh copiado de volta para o arquivo original de registros de corredores
+ 
 
 
 	char aux[TAM_ARQUIVO_CORREDORES+1];
@@ -879,7 +828,7 @@ void liberar_espaco_menu() {
 
 
 
-	for(unsigned i = 0; i < qtd_registros_corredores; i++){
+	for(unsigned i = 0; i < qtd_registros_corredores; i++){//loop p percorrer todos os registros de corredores
 
 		auxCorredor = recuperar_registro_corredor(i);
 		
@@ -914,7 +863,9 @@ void liberar_espaco_menu() {
 			strcat(auxArq, auxArq2);
 			strcat(auxArq, ";");
 
-			for(unsigned i = 0, k = 0; i < QTD_MAX_VEICULO; ++i) {
+
+			for(unsigned i = 0, k = 0; i < QTD_MAX_VEICULO; ++i) {// concatena os veiculos do corredor
+
 				if( strlen ( auxCorredor.veiculos[i] ) > 0) {
 					
 					if (k == 0){
@@ -936,6 +887,7 @@ void liberar_espaco_menu() {
 	
 	}
 
+//atualiznado o arquivo
 	strcpy(ARQUIVO_CORREDORES, aux);
 	qtd_registros_corredores = auxCont;
 	qsort(corredores_idx, qtd_registros_corredores, sizeof(corredores_index), qsort_corredores_idx);
