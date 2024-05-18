@@ -22,8 +22,8 @@
 
 /* <<< COLOQUE AQUI OS DEMAIS PROTÓTIPOS DE FUNÇÕES, SE NECESSÁRIO >>> */
 
-// imprimir_corredor_veiculos_secundario_idx_menu
-// imprimir_corredor_veiculos_primario_idx_menu
+// listar_corredores_modelo_menu
+//
 
 /* Funções auxiliares para o qsort.
  * Com uma pequena alteração, é possível utilizá-las no bsearch, assim, evitando código duplicado.
@@ -887,9 +887,69 @@ void listar_corredores_id_menu() {
 		}
 }
 
-void listar_corredores_modelo_menu(char *modelo){
+void listar_corredores_modelo_menu(char *modelo)
+{
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "listar_corredores_modelo_menu()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "listar_corredores_modelo_menu()");
+
+	// for(unsigned i = 0; i<corredor_veiculos_idx.qtd_registros_secundario; ++i)
+	for (unsigned i = 0; i < corredor_veiculos_idx.qtd_registros_secundario; ++i)
+	{
+		if (strcmp(corredor_veiculos_idx.corredor_veiculos_secundario_idx[i].chave_secundaria, modelo) == 0)
+		{
+
+			char vet[corredor_veiculos_idx.qtd_registros_primario][12];
+			int cont = 0;
+			int left = 0;
+			int right = 0;
+
+			inverted_list_secondary_search(&left, false, modelo, &corredor_veiculos_idx);//encontrar o ind inicial do modelo
+
+			inverted_list_primary_search(vet, true, left, &right, &corredor_veiculos_idx);//corredores->modelo
+
+			for (unsigned j = 0; j < corredor_veiculos_idx.qtd_registros_primario; j++)
+			{
+
+				if (strcmp(vet[j], "") == 0)//vazio
+				{
+
+					break;
+				}
+
+				cont++;
+			}
+			corredores_index *aux = NULL;
+			aux = malloc(cont * sizeof(corredores_index));
+
+			for (unsigned j = 0; j < cont; j++)
+			{
+
+				strncpy(aux[j].id_corredor, vet[j], TAM_CHAVE_CORREDOR_VEICULO_PRIMARIO_IDX);
+
+				for (unsigned k = 0; k < corredor_veiculos_idx.qtd_registros_primario; k++)
+				{
+
+					if (strncmp(aux[j].id_corredor, corredores_idx[k].id_corredor, TAM_CHAVE_CORREDOR_VEICULO_PRIMARIO_IDX) == 0)
+					{
+
+						aux[j].rrn = corredores_idx[k].rrn;
+					}
+				}
+			}
+
+			qsort(aux, cont, sizeof(corredores_index), qsort_corredores_idx);
+
+			for(unsigned j=0;j<cont-1;j++){
+				exibir_corredor(aux[j].rrn);
+			}
+
+			free(aux);
+
+			return;
+		}
+	}
+	printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+	return;
 }
 
 void listar_veiculos_compra_menu(char *id_corredor) {
@@ -1141,12 +1201,38 @@ void imprimir_corredor_veiculos_secundario_idx_menu() {
 	// printf(ERRO_NAO_IMPLEMENTADO, "imprimir_corredor_veiculos_secundario_idx_menu()");
 
 
-	
+	if(corredor_veiculos_idx.qtd_registros_secundario==0||corredor_veiculos_idx.corredor_veiculos_secundario_idx == NULL){
+
+		printf(ERRO_ARQUIVO_VAZIO);
+	}
+	else{
+
+		for(unsigned i=0; i<corredor_veiculos_idx.qtd_registros_secundario; i++){//percorre o indice secund
+			printf("%s, %d\n", strupr(corredor_veiculos_idx.corredor_veiculos_secundario_idx[i].chave_secundaria), corredor_veiculos_idx.corredor_veiculos_secundario_idx[i].primeiro_indice);
+			
+		}
+	}
 }
 
 void imprimir_corredor_veiculos_primario_idx_menu(){
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "imprimir_corredor_veiculos_primario_idx_menu()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "imprimir_corredor_veiculos_primario_idx_menu()");
+
+
+	if(corredor_veiculos_idx.qtd_registros_primario==0||corredor_veiculos_idx.corredor_veiculos_primario_idx == NULL){
+
+		printf(ERRO_ARQUIVO_VAZIO);
+	}
+	else{
+
+		// for(unsigned i=0; i<corredor_veiculos_idx.qtd_registros_primario; i++){//percorre o indice primario
+		for(unsigned i=0; i<corredor_veiculos_idx.qtd_registros_primario; ++i){//percorre o indice primario
+		
+	
+			printf("%s, %d\n", corredor_veiculos_idx.corredor_veiculos_primario_idx[i].chave_primaria, corredor_veiculos_idx.corredor_veiculos_primario_idx[i].proximo_indice);
+	
+		}
+	}
 }
 
 /* Liberar memória e encerrar programa */
