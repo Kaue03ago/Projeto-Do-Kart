@@ -22,7 +22,7 @@
 
 /* <<< COLOQUE AQUI OS DEMAIS PROTÓTIPOS DE FUNÇÕES, SE NECESSÁRIO >>> */
 
-// listar_corredores_modelo_menu
+// executar_corrida_menu
 //
 
 /* Funções auxiliares para o qsort.
@@ -610,7 +610,17 @@ void escrever_registro_pista(Pista p, int rrn) {
 
 void escrever_registro_corrida(Corrida i, int rrn) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "escrever_registro_corrida()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "escrever_registro_corrida()");
+
+
+	char temp[TAM_REGISTRO_CORRIDA + 1];
+	temp[0] = '\0';
+
+	strcpy(temp, i.id_pista);
+	strcat(temp, i.ocorrencia);
+	strcat(temp, i.id_corredores);
+	strcat(temp, i.id_veiculos);
+	strncpy(ARQUIVO_CORRIDAS + (rrn * TAM_REGISTRO_CORRIDA), temp, TAM_REGISTRO_CORRIDA);
 }
 
 /* Funções principais */
@@ -825,7 +835,118 @@ void cadastrar_pista_menu(char *nome, int dificuldade, int distancia, int record
 
 void executar_corrida_menu(char *id_pista, char *ocorrencia, char *id_corredores, char *id_veiculos) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "executar_corrida_menu()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "executar_corrida_menu()");
+
+	Veiculo veiculo[6];
+	Corredor corredor[6];
+	Corrida corrida;
+	Pista pista;
+
+
+	strcpy(corrida.id_pista, id_pista);
+
+	// corridas_index *fond = bsearch
+	corridas_index *fondcheck =bsearch( ocorrencia , corridas_idx , qtd_registros_corridas , sizeof( corridas_index ) , qsort_data_idx );
+	pistas_index *fondPist = bsearch( corrida.id_pista , pistas_idx , qtd_registros_pistas , sizeof( pistas_index ) , qsort_pistas_idx );
+
+	if(fondcheck != NULL){
+		// printf(ERRO_PK_REPETIDA, ocorrencia);
+		 printf(ERRO_PK_REPETIDA,strcat( ocorrencia, id_pista));
+
+			return;
+	}
+
+	strcpy(corrida.ocorrencia, ocorrencia);
+
+	strcpy(corrida.id_corredores, id_corredores);
+
+	strcpy(corrida.id_veiculos, id_veiculos);
+
+
+	if(fondPist == NULL){
+		
+		printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+		return;
+	}
+
+	pista = recuperar_registro_pista(fondPist->rrn);
+
+	float $ = 6*(TX_FIXA* pista.dificuldade);		
+
+	unsigned end[6];
+	char inscritos[6][TAM_ID_CORREDOR];
+
+	for(unsigned i=0; i<6; i++){
+		
+		// strncpy(inscritos[i], corrida.id_corredores + i*(TAM_ID_CORREDOR), TAM_ID_CORREDOR);
+		strncpy(inscritos[i], corrida.id_corredores + i*(TAM_ID_CORREDOR-1), TAM_ID_CORREDOR-1);
+
+		inscritos[i][TAM_ID_CORREDOR-1] = '\0';
+
+		corredores_index *fondCorr = bsearch ( inscritos[i], corredores_idx, qtd_registros_corredores, sizeof ( corredores_index ), qsort_corredores_idx );
+		if( fondCorr == NULL ){
+
+			printf( ERRO_REGISTRO_NAO_ENCONTRADO );
+			return;
+		}
+		corredor[i] = recuperar_registro_corredor( fondCorr->rrn );
+		// printf("\n\n\n\passou 2\n");
+
+		end[i]=fondCorr->rrn;;
+	}char auxVeiculos[6][TAM_ID_VEICULO];
+
+	for (unsigned i=0; i<6;i++){
+		// printf("\n\n\passou \n");
+		strncpy(auxVeiculos[i] , corrida.id_veiculos + i* ( TAM_ID_VEICULO-1 ) , TAM_ID_VEICULO-1 );
+		
+		
+		inscritos [i] [TAM_ID_VEICULO-1]='\0';
+		
+		veiculos_index *fondVeic = bsearch ( auxVeiculos[i] , veiculos_idx, qtd_registros_veiculos, sizeof ( veiculos_index ), qsort_veiculos_idx);	
+		
+		if(fondVeic==NULL){
+			printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+			return;
+		}
+
+		veiculo[i] = recuperar_registro_veiculo( fondVeic -> rrn );
+	}int flag=0;
+	
+	for(unsigned i=0; i<6; i++){
+		if(strcmp(corredor[i].veiculos[0], veiculo[i].modelo) != 0 && strcmp(corredor[i].veiculos[1], veiculo[i].modelo) != 0 && strcmp(corredor[i].veiculos[2], veiculo[i].modelo) != 0){
+			
+			printf(ERRO_CORREDOR_VEICULO, corredor[i].id_corredor, veiculo[i].id_veiculo);
+			flag=1;
+			// break;
+		}
+	}
+		if(flag==1){
+			return;
+		}
+
+	corredor[0].saldo = corredor[0].saldo + (0.4*$);
+	corredor[1].saldo = corredor[1].saldo + (0.3*$);
+	corredor[2].saldo = corredor[2].saldo + (0.2*$);
+
+	for(unsigned i=0; i<6; i++){
+	
+		escrever_registro_corredor(corredor[i], end[i]);
+	}
+	strcpy(corridas_idx[qtd_registros_corridas].id_pista, corrida.id_pista);
+
+
+	corridas_idx[qtd_registros_corridas].rrn = qtd_registros_corridas;
+
+	strcpy(corridas_idx[qtd_registros_corridas].ocorrencia, ocorrencia);
+
+	escrever_registro_corrida(corrida, qtd_registros_corridas);
+	qtd_registros_corridas++;
+	printf(SUCESSO);
+
+
+
+
+
 }
 
 /* Busca */
