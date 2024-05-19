@@ -1104,7 +1104,46 @@ void listar_veiculos_compra_menu(char *id_corredor) {
 
 void listar_corridas_periodo_menu(char *data_inicio, char *data_fim) {
 	/*IMPLEMENTE A FUNÇÃO AQUI*/
-	printf(ERRO_NAO_IMPLEMENTADO, "listar_corridas_periodo_menu()");
+	// printf(ERRO_NAO_IMPLEMENTADO, "listar_corridas_periodo_menu()");
+
+
+		corridas_index c;
+
+
+	strcpy(c.ocorrencia, data_inicio);
+	
+	corridas_index *found = busca_binaria_com_reps((void*)&c, corridas_idx, qtd_registros_corridas, sizeof(corredores_index), qsort_data_idx, true, -1, -1);
+
+
+	if(found == NULL){
+
+		printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+
+		return;
+	}
+
+	bool verifica = false;
+
+	for(int i = 0; i<qtd_registros_corridas; i++){
+
+		if(strcmp(corridas_idx[i].ocorrencia, data_inicio) >= 0 && strcmp(corridas_idx[i].ocorrencia, data_fim) <= 0){
+
+			exibir_corrida(corridas_idx[i].rrn);
+
+			verifica = true;
+		}
+	}
+
+	if (verifica == false){
+
+		printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+
+		return;
+	} 
+
+	
+
+
 }
 
 /* Liberar espaço */
